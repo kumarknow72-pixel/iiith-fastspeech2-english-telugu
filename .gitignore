@@ -1,0 +1,5 @@
+checkpoints/
+features/
+*.npz
+*.pt
+__pycache__/

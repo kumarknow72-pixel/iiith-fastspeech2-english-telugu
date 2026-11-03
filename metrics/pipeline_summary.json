@@ -1,0 +1,221 @@
+{
+  "config": {
+    "SR": 22050,
+    "HOP": 256,
+    "NFFT": 1024,
+    "N_MELS": 80,
+    "BOUNDARY_MODE": "midpoint",
+    "PAD_START": 0.15,
+    "PAD_END": 0.2,
+    "CTC_SEC": 0.02
+  },
+  "validation": {
+    "english/train": {
+      "n": 1107,
+      "bad": 0,
+      "median_align_over_audio": 0.962717592716217,
+      "zero_duration_token_frac": 0.0018373475001574868
+    },
+    "english/val": {
+      "n": 123,
+      "bad": 0,
+      "median_align_over_audio": 0.9608150124549866,
+      "zero_duration_token_frac": 0.0009693679720822024
+    },
+    "telugu/train": {
+      "n": 848,
+      "bad": 0,
+      "median_align_over_audio": 0.9647069871428229,
+      "zero_duration_token_frac": 0.0001064528147898444
+    },
+    "telugu/val": {
+      "n": 95,
+      "bad": 0,
+      "median_align_over_audio": 0.9688862562179565,
+      "zero_duration_token_frac": 7.036554902719963e-05
+    }
+  },
+  "device": "Tesla T4 GPU training; CPU checkpoint inference",
+  "model_cfg": {
+    "d": 256,
+    "heads": 2,
+    "ff": 1024,
+    "k": 9,
+    "layers": 4,
+    "vp_ch": 256,
+    "vp_k": 3,
+    "post_ch": 512,
+    "drop": 0.1
+  },
+  "batch_size": 16,
+  "train": {
+    "english": {
+      "steps": 7778,
+      "n_train": 979,
+      "n_train_skipped_long": 128,
+      "n_val": 123
+    },
+    "telugu": {
+      "steps": 6016,
+      "n_train": 219,
+      "n_train_skipped_long": 629,
+      "n_val": 95
+    }
+  },
+  "eval": {
+    "english": {
+      "teacher_forced_mel": 0.9973242350710116,
+      "teacher_forced_post": 0.997373730671115,
+      "teacher_forced_dur": 0.1859163808810517,
+      "teacher_forced_pitch": 1.142010708044215,
+      "teacher_forced_energy": 0.6441784610108632,
+      "duration_MAE_frames": 3.001744862349748,
+      "duration_MAE_ms": 34.85018978510365,
+      "total_length_ratio_pred_over_true": 0.86402627825737,
+      "total_length_ratio_std": 0.22017202081601334,
+      "pitch_RMSE_Hz_token": 64.50131324885452,
+      "energy_RMSE_token": 29.876621659180504,
+      "n_val": 123
+    },
+    "telugu": {
+      "teacher_forced_mel": 0.7525848169075815,
+      "teacher_forced_post": 0.7518546154624537,
+      "teacher_forced_dur": 0.10857748983329849,
+      "teacher_forced_pitch": 0.7107622905781394,
+      "teacher_forced_energy": 0.42538003952879655,
+      "duration_MAE_frames": 1.988882243253703,
+      "duration_MAE_ms": 23.090877744804896,
+      "total_length_ratio_pred_over_true": 0.9488359413648907,
+      "total_length_ratio_std": 0.08760992648550814,
+      "pitch_RMSE_Hz_token": 38.66163592634191,
+      "energy_RMSE_token": 21.216613864268904,
+      "n_val": 95
+    }
+  },
+  "samples": {
+    "english": [
+      {
+        "name": "val1",
+        "text": "are there any vaccination centres available in south goa district for age group years",
+        "seconds": 6.722176870748299,
+        "rtf_model": 0.06200892080006928
+      },
+      {
+        "name": "val2",
+        "text": "list all items from pet food items",
+        "seconds": 2.8676643990929707,
+        "rtf_model": 0.21203005566231667
+      },
+      {
+        "name": "val3",
+        "text": "the promotion of consumption patterns characterized by over exploitation",
+        "seconds": 4.841360544217687,
+        "rtf_model": 0.06974220585577083
+      },
+      {
+        "name": "val4",
+        "text": "and i encountered a few difficulties in speaking english but not in writing in english",
+        "seconds": 5.921088435374149,
+        "rtf_model": 0.06641044460032901
+      },
+      {
+        "name": "val5",
+        "text": "assam situated at the foothills of the eastern himalayas",
+        "seconds": 3.599092970521542,
+        "rtf_model": 0.061817627424116686
+      },
+      {
+        "name": "custom1",
+        "text": "the quick brown fox jumps over the lazy dog",
+        "seconds": 3.6919727891156464,
+        "rtf_model": 0.05987671387840214
+      },
+      {
+        "name": "custom2",
+        "text": "speech synthesis converts written text into spoken audio",
+        "seconds": 3.959002267573696,
+        "rtf_model": 0.062407038517688446
+      },
+      {
+        "name": "custom3",
+        "text": "hyderabad is famous for its biryani and its historic charminar",
+        "seconds": 5.352199546485261,
+        "rtf_model": 0.2212970136580142
+      },
+      {
+        "name": "custom4",
+        "text": "please call me when you reach the station",
+        "seconds": 2.403265306122449,
+        "rtf_model": 0.06645843991114256
+      },
+      {
+        "name": "custom5",
+        "text": "machine learning models need a lot of clean data",
+        "seconds": 3.5874829931972787,
+        "rtf_model": 0.06258859299123287
+      }
+    ],
+    "telugu": [
+      {
+        "name": "val1",
+        "text": "aa nagaramloo oka cootta mitravimdakuddiki oka manissi kanipimcaaddu aa manissi tana nettina asidhaaraacakram moostunnaaddu daani amcu padunugaa umddattamvallanuu adi caalaa baruvainadi ganukanuu aa cakram atani talalooki digabaddi pooyimdi tala numci raktam dhaaralugaa kaarutunnadi aa manissi shariiram ayidu peettala golusulatoo bamdhimcabaddi unnadi atanu bhaadhatoo muulugutunnaaddu",
+        "seconds": 28.85079365079365,
+        "rtf_model": 0.08652532167510936
+      },
+      {
+        "name": "val2",
+        "text": "vikramaarkuddu pattttudalatoo cettttuvaddaku tirigi velllli shavaanni dimci bhujaana veesukuni shmashaanamkeesi naddavasaagaaddu appuddu shavamloo unna beetaalluddu raajaa niivu marokarikoosam imtagaa paattubaddutunnaavu kaani ii prapamcamloo krtajnyata caalaa arudu manavalla komcem porapaattu jarigitee manadvaaraa baagupaddinavaallllee manaku garbha shatruvu lavutaaru imduku udaahaarannagaa niiku loohituddi kadha cebutaanu vinu amttuu ii kimdi kadha ceppaaddu",
+        "seconds": 32.97233560090703,
+        "rtf_model": 0.09584174522935338
+      },
+      {
+        "name": "val3",
+        "text": "shavaanni vetikitee taallapuceevula gutti dorikimdi loohituddu vaattini tiisukuni neerugaa dharmaguptuddi imttiki vellllaaddu talupu terici loopala praveeshimcaaddu inupa petttteloo lakssaluceesee vemddi bamgaaramu unnadi adamtaa oka gootamloo veesukuni inupapettttee muusi imttiki taallam veesi loohituddu tana imttiki tirigi vaccaaddu",
+        "seconds": 22.604625850340135,
+        "rtf_model": 0.07796627918766999
+      },
+      {
+        "name": "val4",
+        "text": "evarikii anumaanam kalagakumddaa umdda galamdulaku loohituddu taanu erigina vaari daggara daarikharcuku apputiisukuni kaashiiki vellutunnaanani bayaludeeri vellllaaddu aayana tirigivacceedaakaa bhaaryaa pillalu caalaa peedagaa batikaaru aaru nelala anamtaram oka ardharaatri loohituddu imttiki ceeri attakamiidinumci vemddi bamgaaraalu dimcaaddu maarnaaddu taanerigina vaaramdarinii pilici vaariki tana sottamtaa cuupimci kaashiiloo sidduddi dayavalla ii vemddi bamgaaraalu dorikaayi naa jiivitam naa pillala jiivitam sukhamgaa vellllipootumdi annaaddu amdaruu loohitunnnni abhinamdimcaaru ataddi jiivitam sukhamgaa vellllipootunnadi",
+        "seconds": 45.453061224489794,
+        "rtf_model": 0.15671469059043144
+      },
+      {
+        "name": "val5",
+        "text": "jamiimdaaru vellllipooyaaka aayana bhaarya calaaseepu yoocimcimdi mati sarigaaleeni tana bharta ceppaaddugadaa ani uri poosuku caavattam aame kemtamaatram isstthamleedu",
+        "seconds": 13.235374149659863,
+        "rtf_model": 0.06988951964932351
+      }
+    ]
+  },
+  "extraction": {
+    "english/train": {
+      "total": 1107,
+      "pass_rate": 1.0,
+      "stats": {
+        "validated_features": 1107
+      }
+    },
+    "english/val": {
+      "total": 123,
+      "pass_rate": 1.0,
+      "stats": {
+        "validated_features": 123
+      }
+    },
+    "telugu/train": {
+      "total": 848,
+      "pass_rate": 1.0,
+      "stats": {
+        "validated_features": 848
+      }
+    },
+    "telugu/val": {
+      "total": 95,
+      "pass_rate": 1.0,
+      "stats": {
+        "validated_features": 95
+      }
+    }
+  }
+}

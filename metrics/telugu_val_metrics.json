@@ -1,0 +1,14 @@
+{
+  "teacher_forced_mel": 0.7525848169075815,
+  "teacher_forced_post": 0.7518546154624537,
+  "teacher_forced_dur": 0.10857748983329849,
+  "teacher_forced_pitch": 0.7107622905781394,
+  "teacher_forced_energy": 0.42538003952879655,
+  "duration_MAE_frames": 1.988882243253703,
+  "duration_MAE_ms": 23.090877744804896,
+  "total_length_ratio_pred_over_true": 0.9488359413648907,
+  "total_length_ratio_std": 0.08760992648550814,
+  "pitch_RMSE_Hz_token": 38.66163592634191,
+  "energy_RMSE_token": 21.216613864268904,
+  "n_val": 95
+}
