@@ -10,18 +10,19 @@
 # =====================================================================================
 
 # ----------------------------- CONFIG (edit only this block) ---------------------------
-PROJECT = "/content/drive/MyDrive/IIITH_FastSpeech2_Project"
-OUT = f"{PROJECT}/module4_final"                     # all new outputs (old folders untouched)
+PROJECT = os.environ.get("FS2_PROJECT", "/content/drive/MyDrive/IIITH_FastSpeech2_Project")
+OUT = os.environ.get("FS2_OUT", f"{PROJECT}/module4_final")
+# Both languages must be loaded together: the saved checkpoints share one combined vocabulary.
 LANGS = ["english", "telugu"]
 ALIGN_JSON = {l: f"{PROJECT}/full_alignment/{l}_alignment.json" for l in LANGS}
 META_JSON = {l: {s: f"{PROJECT}/module1_dataset/{l}/{s}_metadata.json" for s in ("train", "val")} for l in LANGS}
 
-RUN_FEATURES = True
-RUN_TRAIN = False
-RUN_SYNTH = False
-TRAIN_MINUTES = 45          # per language, PER RUN of this cell. Re-run the cell to keep training.
-MAX_STEPS = 30000           # hard cap on total steps (checkpoint resumes across runs)
-BATCH_SIZE = None           # None -> 16 on GPU, 8 on CPU
+RUN_FEATURES = os.environ.get("FS2_RUN_FEATURES", "1").lower() in ("1", "true", "yes")
+RUN_TRAIN = os.environ.get("FS2_RUN_TRAIN", "0").lower() in ("1", "true", "yes")
+RUN_SYNTH = os.environ.get("FS2_RUN_SYNTH", "0").lower() in ("1", "true", "yes")
+TRAIN_MINUTES = int(os.environ.get("FS2_TRAIN_MINUTES", "45"))
+MAX_STEPS = int(os.environ.get("FS2_MAX_STEPS", "30000"))
+BATCH_SIZE = None
 MAX_MEL_FRAMES = 1000       # training utterances longer than this are skipped (~11.6 s)
 GRIFFIN_LIM_ITERS = 60
 N_SAMPLES = 5
