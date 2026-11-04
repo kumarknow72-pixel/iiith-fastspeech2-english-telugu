@@ -1,0 +1,14 @@
+language: english
+pipeline: ../fs2_pipeline_colab.py
+pipeline_scope: paired_english_and_telugu
+shared_vocabulary: true
+sample_rate: 22050
+hop_length: 256
+n_fft: 1024
+n_mels: 80
+max_mel_frames: 1000
+checkpoint: ../module4_final/checkpoints/english/last.pt
+notes:
+  - Documents the settings used in the existing experiment.
+  - The shared pipeline builds one vocabulary and processes both languages.
+  - This is not a standalone language-isolated training configuration.
