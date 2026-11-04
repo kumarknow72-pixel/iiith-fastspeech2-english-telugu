@@ -1,25 +1,32 @@
 # IIITH FastSpeech 2 Assignment — Completion Tracker
 
-This branch is a safe working branch for bringing the existing project in line with the assignment. The `main` branch is unchanged.
+This is the working submission branch. The `main` branch is intentionally left unchanged.
 
-## Verified repository gaps to close
+## Verified in the user's shared Google Drive submission folder (4 Nov 2026)
 
-- [ ] Separate English and Telugu entry points: `preprocess.py`, `train.py`, `inference.py`, and language-specific configuration.
-- [ ] Preserve the existing trained checkpoints and record their exact paths and hashes.
-- [ ] Add validation-loss tracking during training and export validation-loss plots.
-- [ ] Generate audio for every exact English and Telugu assignment test sentence.
-- [ ] Generate per-test duration, pitch, and energy plots for both languages.
-- [ ] Verify actual train/validation audio hours, split independence, and the number of examples actually used by each training run.
-- [ ] Reconcile the technical report with the actual code and run logs.
-- [ ] Produce the requested PDF report and final README with reproducible commands.
-- [ ] Confirm dataset and checkpoint redistribution permissions before publishing those artifacts.
+- [x] English checkpoint exists: `English/checkpoints/Last.pt`.
+- [x] Telugu checkpoint exists: `Telugu/checkpoints/Last.pt`.
+- [x] English test audio: E1, E2a, E2b, E3, E4 (5 WAV files).
+- [x] Telugu test audio: T1, T2a, T2b, T3, T4 (5 WAV files).
+- [x] English variance-adaptor plots: 5 duration + 5 pitch + 5 energy.
+- [x] Telugu variance-adaptor plots: 5 duration + 5 pitch + 5 energy.
+- [x] English and Telugu training-loss images are present.
+- [x] Both language configuration files and inference-results JSON files were visible in the Drive results structure.
+- [x] README, requirements file, and Technical_Report.pdf/Technical_Report.md are present in the Drive submission folder.
 
-## Important reproducibility notes
+See [DRIVE_RESULTS_MANIFEST.md](DRIVE_RESULTS_MANIFEST.md) for the verified Drive inventory.
 
-- Do not claim that a model was retrained, a test utterance was synthesized, or a plot was generated unless the corresponding output exists and has been checked.
-- Do not upload source datasets or WAV files unless their licences permit redistribution.
-- Keep the original `main` branch intact until the assignment branch has been reviewed.
+## Still to complete or verify in this GitHub branch
 
-## Work that requires the user's Colab/Drive environment
+- [ ] Add and review separate language-specific `preprocess.py`, `train.py`, and `inference.py` entry points. The existing `fs2_pipeline_colab.py` is a monolithic Colab pipeline; it is not six separate entry points.
+- [ ] Add the final technical report (Markdown/PDF) to this repository after checking the report contents and redistribution constraints.
+- [ ] Decide whether to publish checkpoints/audio/plots. Checkpoint files are large; generated audio and checkpoints must not be redistributed until the relevant dataset/model terms are confirmed. The Drive inventory is not the same as a GitHub upload.
+- [ ] Add a genuine validation-loss curve only if per-step validation-loss history exists. Do not relabel training loss as validation loss.
+- [ ] Verify exact train/validation audio hours, split independence, and actual examples used from original logs before making precise dataset-hour claims.
 
-The current repository connection does not expose the user's Google Drive datasets or active Colab runtime. Therefore, the following must be run in the connected Colab environment: dataset-hour verification, any required retraining, assignment-sentence synthesis, and export of genuine loss curves, audio, and variance-adaptor plots.
+## Reproducibility and integrity notes
+
+- Do not claim that the six separate entry-point files exist until they are added and tested.
+- Do not claim that Drive files are hosted in this repository unless the corresponding GitHub paths are visible.
+- Do not upload source datasets or copyrighted audio/checkpoints without confirming redistribution permission.
+- Keep `main` unchanged until this branch has been reviewed.
