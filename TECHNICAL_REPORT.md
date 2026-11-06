@@ -1,66 +1,66 @@
-# FastSpeech2 English and Telugu TTS: Technical Report
+# FastSpeech2 English and Telugu TTS: Corrected Technical Report
 
-## 1. Task
-Two separate single-speaker FastSpeech2 models: English (Svarah) and Telugu (IndicTTS Telugu, romanized). Five samples per language,
-plots of predicted duration/pitch/energy, evaluation, and this report.
+## 1. Task and repository scope
+The project implements separate English (Svarah) and Telugu (IndicTTS Telugu, romanized) FastSpeech2 experiments. The public repository contains the pipeline code, evaluation metrics, visualizations and documentation. Generated audio and trained checkpoints are not included in the public repository; see README.md and the limitations below.
 
-## 2. Data and filtering (Module 1)
-Forced alignment (torchaudio MMS_FA, CTC): 5,125 of 5,184 files aligned (98.86%). Filtering kept utterances with speech coverage >= 85% and
-mean character confidence >= 80%: English 1107 train + 123 val,
-Telugu 848 train + 95 val.
+## 2. Data and filtering
+Forced alignment used torchaudio MMS_FA (CTC): 5,125 of 5,184 files were aligned (98.86%). Filtering retained utterances with speech coverage >= 85% and mean character confidence >= 80%.
 
-## 3. Duration targets (the critical step)
-The earlier duration arrays were invalid (sum != mel frames) because intervals from `merge_tokens()` (blanks removed) were treated as tokens
-of a different tokenizer. They were discarded. The rebuilt pipeline:
-1. Token sequence = `~` + characters of the *same romanized string the aligner consumed*, words joined by a space token, + `~`. Every letter token
-   therefore corresponds to exactly one aligned CTC character (checked per utterance; mismatches are dropped, not patched).
-2. Boundaries come from the stored CTC spans converted by time (20 ms per CTC frame -> seconds -> mel frames at hop 256/22050 Hz), not from
-   forcing sums. Silence before/after speech is the `~` tokens; inter-word pauses belong to the space token; the gap between two characters
-   inside a word is split at the midpoint (mode `midpoint`).
-3. Mel, pitch (WORLD dio + stonemask, interpolated through unvoiced regions) and energy (L2 norm of the STFT magnitude) are computed from the raw
-   WAV, trimmed to the aligned speech plus 0.15s/0.2s, with the repository audio settings (22,050 Hz, hop 256, FFT/window 1024, 80 mels, 0-8000 Hz).
-   Pitch and energy are averaged per token (phoneme-level, as in stock FastSpeech2).
-4. Hard checks per utterance: sum(duration) == mel frames, len(duration) == len(tokens), finite features, alignment end not beyond audio length.
-   Pass rates: {"english/train": 1.0, "english/val": 1.0, "telugu/train": 1.0, "telugu/val": 1.0}.
-   Median (last aligned time / audio length): english train 0.963, telugu train 0.965.
-   Fraction of zero-duration tokens: english 0.0018, telugu 0.0001.
+- Eligible after filtering: English 1,107 train + 123 validation; Telugu 848 train + 95 validation.
+- Actually used for training after the 1,000-mel-frame length limit: English 979 (1,107 eligible minus 128 skipped); Telugu 219 (848 eligible minus 629 skipped).
+- Validation sets: 123 English and 95 Telugu.
+
+The eligible counts are not the same as the counts actually used for training. The Telugu training set was especially reduced by the length filter.
+
+## 3. Duration targets and feature preparation
+An earlier duration-array approach was discarded because duration sums did not match mel-frame counts. The rebuilt pipeline uses the same romanized character sequence consumed by the aligner, with start/end marker tokens and spaces retained. Character-to-alignment mismatches are dropped rather than patched.
+
+1. CTC boundaries are converted from 20 ms frames to seconds and then to mel frames using 22,050 Hz sampling and hop length 256.
+2. Silence before and after speech is assigned to start/end marker tokens; inter-word pauses belong to the space token; within-word character gaps are split at the midpoint.
+3. Mel, pitch and energy are computed from raw audio using 22,050 Hz, hop 256, FFT/window 1,024, 80 mel channels and 0–8,000 Hz.
+4. Pitch uses WORLD DIO plus StoneMask, interpolated through unvoiced regions. Energy is the L2 norm of STFT magnitude.
+5. Per-utterance checks include duration sum equals mel-frame count, duration length equals token length, finite features and alignment end within audio length.
+
+Feature validation pass rates: 100% for English train/validation and Telugu train/validation.
+
+Median aligned-time/audio ratios: English train 0.9627, English validation 0.9608, Telugu train 0.9647, Telugu validation 0.9689. Zero-duration token fractions: English train 0.00184, Telugu train 0.000106.
 
 ## 4. Model and training
-Encoder (4 FFT blocks), variance adaptor (duration, pitch, energy predictors; 256-bin pitch/energy embeddings; length regulator), decoder
-(4 FFT blocks), 5-layer postnet; hidden 256, 2 heads, 80 mel channels. Config used: {"d": 256, "heads": 2, "ff": 1024, "k": 9, "layers": 4, "vp_ch": 256, "vp_k": 3, "post_ch": 512, "drop": 0.1} on `Tesla T4 GPU training; CPU checkpoint inference`
-(The trained checkpoints use feed-forward width 1024 and postnet width 512; CPU inference retains the same architecture). Loss = mel L1 + postnet mel L1 + log-duration MSE + pitch MSE + energy MSE.
-Adam, peak LR 1e-3, 300-step warm-up, halving every 3,000 steps, gradient clip 1.0, batch 16.
-Steps trained: English 7778, Telugu 6016 (stock recipe is 160,000; see limitations).
-Vocoder: Griffin-Lim (20 iterations) on the predicted log-mel (no neural vocoder).
+The model uses a 4-block FFT encoder, variance adaptor with duration, pitch and energy predictors, length regulator, 4-block FFT decoder and 5-layer postnet. Hidden size 256; 2 attention heads; feed-forward width 1,024; FFT kernel 9; pitch/energy embedding channels 256; predictor kernel 3; postnet channels 512; dropout 0.1.
 
-## 5. Evaluation (validation sets, objective)
+- Loss: mel L1 + postnet mel L1 + log-duration MSE + pitch MSE + energy MSE.
+- Optimizer: Adam; peak learning rate 1e-3; 300-step warm-up; learning-rate halving every 3,000 steps; gradient clipping 1.0; batch size 16.
+- Training steps: English 7,778; Telugu 6,016.
+- Device: Tesla T4 GPU training; CPU checkpoint inference.
+
+Vocoder: Griffin–Lim with 20 iterations on predicted log-mel spectrograms; no neural vocoder was used.
+
+## 5. Objective evaluation
+
 | Metric | English | Telugu |
-|---|---|---|
-| Teacher-forced postnet mel L1 (log-mel) | 0.997 | 0.752 |
-| Duration MAE per token (frames / ms) | 3.00 / 35 | 1.99 / 23 |
-| Predicted/true total length | 0.864 +- 0.220 | 0.949 +- 0.088 |
-| Pitch RMSE per token (Hz) | 64.5 | 38.7 |
+|---|---:|---:|
+| Teacher-forced postnet mel L1 | 0.9974 | 0.7519 |
+| Duration MAE per token (frames / ms) | 3.00 / 34.85 | 1.99 / 23.09 |
+| Predicted/true total length (mean ± SD) | 0.864 ± 0.220 | 0.949 ± 0.088 |
+| Pitch RMSE per token (Hz) | 64.50 | 38.66 |
 | Energy RMSE per token | 29.88 | 21.22 |
 | Validation utterances | 123 | 95 |
 
-Audio samples were generated during the experiments but are not
-included in this public repository pending confirmation of dataset
-redistribution permissions. English experiments included five validation
-samples and five custom samples; Telugu experiments included five
-validation samples.
+The repository contains English validation plots, five English custom-sample plots, five Telugu validation plots, and English and Telugu training curves. The pipeline summary records five English validation samples, five English custom samples and five Telugu validation samples. It does not record five Telugu custom samples.
 
-Plots: `plots/*_duration_pitch_energy.png` (predicted vs alignment-derived
-targets) and `plots/*_training_curve.png`. No listening test (MOS) was
-run; objective numbers do not measure naturalness.
+No Mean Opinion Score (MOS) listening test was run. Objective metrics do not directly measure perceived naturalness. Audio files and model checkpoints are not included in the public repository. README.md notes that original datasets and checkpoints are not included, and generated Telugu audio is withheld pending licence confirmation.
 
-## 6. Limitations (be explicit when submitting)
-* **Telugu text is romanized with uroman, not phonemes.** uroman is a script transliteration, not a pronunciation model: it loses vowel length,
-  geminates, retroflex/dental distinctions and schwa behaviour, so the model must learn the many-to-one spelling-to-sound map from ~850 utterances.
-  Expect mispronunciations; a Telugu grapheme-to-phoneme front end or a Unicode/Indic-aware vocabulary is the main quality upgrade.
-* **Training budget.** Training was limited to 7,778 English steps and 6,016 Telugu steps, far below the 160k-step stock recipe; this limits acoustic-model quality.
-* **Single-speaker model on multi-speaker data.** Svarah has many accented speakers; a single-speaker config averages them. Speaker embeddings would help.
-* **Griffin-Lim vocoder** adds a metallic/phase-noise artefact independent of the acoustic model. HiFi-GAN would improve naturalness.
-* **Duration boundaries** come from 20 ms CTC frames of a wav2vec2 aligner (about +-1 CTC frame uncertainty and a possible constant offset); within-word
-  boundaries use a documented midpoint rule. They are alignment-derived targets, not human-annotated ground truth.
-* Punctuation is stripped (no prosodic cues); utterances over 1000 mel frames were excluded from training; filtering kept
-  only 2,173 of 5,125 aligned files.
+## 6. Limitations
+- Telugu uses uroman transliteration rather than a pronunciation-aware phoneme front end. Transliteration can lose vowel length, gemination, retroflex/dental distinctions and schwa behavior.
+- Training stopped at 7,778 English and 6,016 Telugu steps; only 979 English and 219 Telugu training utterances were used after the length filter. This limits model quality.
+- Svarah contains multiple accented speakers, while this setup uses a single-speaker configuration.
+- Griffin–Lim can introduce metallic or phase-noise artifacts; a neural vocoder such as HiFi-GAN may improve naturalness.
+- Durations derive from 20 ms CTC frames and midpoint assignment within words; they are alignment-derived targets, not human-annotated ground truth.
+- Punctuation is stripped, reducing prosodic cues; utterances longer than 1,000 mel frames were excluded.
+
+## 7. Repository contents and reproducibility
+The reviewed public repository contains README.md, TECHNICAL_REPORT.md, fs2_pipeline_colab.py, requirements.txt, vocab.json, metrics/ and plots/. The repository tree reviewed for this report does not contain separate preprocess.py, train.py, inference.py or config.yaml files, nor trained checkpoint files. The single pipeline script is the main implementation entry point.
+
+Repository: https://github.com/kumarknow72-pixel/iiith-fastspeech2-english-telugu
+
+Submission note: This report reflects the committed repository files and metrics reviewed. Confirm the assignment's required deliverables separately; this report does not claim a full 160,000-step training run, MOS evaluation, or five Telugu custom audio outputs.
