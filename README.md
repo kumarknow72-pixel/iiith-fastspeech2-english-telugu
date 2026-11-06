@@ -34,6 +34,7 @@ This repository contains our implementation, experimental results, evaluation me
 
 - Original datasets are not included.
 - Trained model checkpoints are not included.
+- Generated English model-output WAV samples are included under `samples/english/` (five validation-text samples and five custom-text samples).
 - Generated Telugu audio samples are withheld pending confirmation of redistribution permissions.
 
 This is an independent academic experimental project and is not an official product of AI4Bharat or IIT Madras.
@@ -48,6 +49,7 @@ This repository contains a reproducible experimental FastSpeech2 pipeline for En
 - `TECHNICAL_REPORT.md` — methods, dataset filtering, model configuration, objective metrics and limitations.
 - `metrics/` — committed objective evaluation outputs.
 - `plots/` — committed training and validation visualizations.
+- `samples/english/` — five generated validation-text WAV samples and five generated custom-text WAV samples.
 - `vocab.json` and `requirements.txt` — vocabulary and Python dependencies.
 
 ## Reproducing the experiments
@@ -66,9 +68,9 @@ The synthesis code creates five validation-text samples per language. It additio
 
 ## Current artifact status
 
-The committed repository currently contains code, metrics, plots and documentation. It does **not** contain trained model checkpoint files or generated WAV audio files. The technical report therefore reports objective evaluation results but does not claim that audio samples are included in this repository.
+The committed repository contains code, metrics, plots, documentation and 10 generated English WAV samples under `samples/english/` (five validation-text samples and five custom-text samples). Trained model checkpoint files are not included.
 
-Generated Telugu audio is not redistributed here until the applicable IndicTTS terms have been checked. Do not upload source dataset audio or other dataset material unless its licence explicitly permits redistribution. If you add generated samples, include only files you are permitted to share and identify them clearly as model-generated outputs.
+Generated Telugu audio is not redistributed here until the applicable IndicTTS terms have been checked. Do not upload source dataset audio or other dataset material unless its licence explicitly permits redistribution. The English files are model-generated outputs, not original Svarah recordings. Their presence does not constitute a subjective quality or MOS evaluation.
 
 ## Important limitations
 
